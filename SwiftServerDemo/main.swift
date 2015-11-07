@@ -67,10 +67,21 @@ class ServerDemo: ServerDelegate {
     }
 
     func run() throws {
-        let localhost = Address.fromHostname("localhost")!
-        let endpoint = Endpoint(address: localhost, port: 12345)
+        let port: Port = 12345
+        let localhost4 = Address.fromHostname("127.0.0.1")!
+        let endpoint4 = Endpoint(address: localhost4, port: port)
 
-        if let server = try? Server(endpoint: endpoint) {
+        if let server = try? Server(endpoint: endpoint4) {
+            // Also add the local IPv6 address as an endpoint.
+            if let localhost6 = Address.fromHostname("::1") {
+                let endpoint6 = Endpoint(address: localhost6, port: port)
+                do {
+                    try server.addLocalEndpoint(endpoint6)
+                } catch {
+                    print("Unable to add IPv6 endpoint")
+                }
+            }
+
             server.delegate = self
             print("Server started")
 
