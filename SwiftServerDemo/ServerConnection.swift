@@ -66,7 +66,7 @@ class ServerConnection: CustomStringConvertible {
 
     func sendString(str: String) -> Int {
         if let data = str.cStringUsingEncoding(NSUTF8StringEncoding) {
-            return send(descriptor, data, data.count, 0)
+            return send(descriptor, data, data.count - 1, 0)
         } else {
             return -1
         }
