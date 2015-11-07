@@ -88,7 +88,35 @@ struct Address: CustomStringConvertible {
                 s += address[i].description
             }
         } else {
+            // First, find the longest sequence of zeros.
+            var maxZeroCount = 0
+            var maxZeroStart = 0
+            var zeroCount = 0
+            var zeroStart = 0
             for i in 0..<16 {
+                if address[i] == 0 {
+                    if zeroCount++ == 0 {
+                        zeroStart = i
+                    }
+
+                    if zeroCount > maxZeroCount {
+                        maxZeroCount = zeroCount
+                        maxZeroStart = zeroStart
+                    }
+                } else {
+                    zeroCount = 0
+                }
+            }
+
+            // Now build the string, shortening the longest sequence of zeros.
+            for i in 0..<16 {
+                if maxZeroCount > 1 && i >= maxZeroStart && i < maxZeroStart + maxZeroCount {
+                    if i == maxZeroStart {
+                        s += ":"
+                    }
+                    continue
+                }
+
                 if s.characters.count > 0 {
                     s += ":"
                 }
