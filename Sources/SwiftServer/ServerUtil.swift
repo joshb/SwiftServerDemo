@@ -30,14 +30,14 @@ import Glibc
 import Foundation
 #endif
 
-typealias Descriptor = Int32
+public typealias Descriptor = Int32
 
 #if os(Linux)
 private let SOCK_STREAM: Int32 = 1
 #endif
 
 /// Contains server utility functions.
-class ServerUtil {
+public class ServerUtil {
 #if os(Linux)
     class func addEpollEvent(epollDescriptor: Descriptor, socketDescriptor: Descriptor) {
         var event = epoll_event()

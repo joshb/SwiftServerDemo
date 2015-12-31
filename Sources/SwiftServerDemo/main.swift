@@ -23,6 +23,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import SwiftServer
+
 class ServerDemo: ServerDelegate {
     private struct User {
         var connection: ServerConnection

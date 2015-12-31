@@ -34,7 +34,7 @@ public enum AddressType {
 }
 
 /// Represents an IPv4 or IPv6 address.
-struct Address: CustomStringConvertible {
+public struct Address: CustomStringConvertible {
     var type: AddressType
     var address: [UInt8]
     var hostname: String?
@@ -43,7 +43,7 @@ struct Address: CustomStringConvertible {
     ///
     /// - parameter hostname: Hostname to resolve.
     /// - returns: Address, or nil if the hostname could not be resolved.
-    static func fromHostname(hostname: String) -> Address? {
+    public static func fromHostname(hostname: String) -> Address? {
         let hostnameCStr = hostname.utf8CString
 
         // Resolve the hostname. We try resolving an IPv6 address
@@ -77,7 +77,7 @@ struct Address: CustomStringConvertible {
     }
 
     /// String representation of the IPv4/IPv6 address.
-    var addressString: String {
+    public var addressString: String {
         var s = ""
 
         if type == .IPv4 {
@@ -131,7 +131,7 @@ struct Address: CustomStringConvertible {
     }
 
     /// Hostname if set, otherwise the IPv4/IPv6 address.
-    var description: String {
+    public var description: String {
         return hostname ?? addressString
     }
 }

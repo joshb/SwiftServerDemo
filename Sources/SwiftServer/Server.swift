@@ -30,18 +30,18 @@ import Glibc
 import Darwin
 #endif
 
-enum ServerError: ErrorType {
+public enum ServerError: ErrorType {
     case UnableToCreateEpoll, UnableToCreateKQueue, UnableToCreateSocket, UnableToAcceptConnection
 }
 
-protocol ServerDelegate {
+public protocol ServerDelegate {
     func connectionOpened(connection: ServerConnection)
     func connectionClosed(connection: ServerConnection)
     func dataReceived(connection: ServerConnection)
 }
 
-class Server {
-    var delegate: ServerDelegate?
+public class Server {
+    public var delegate: ServerDelegate?
 
 #if os(Linux)
     private var epollDescriptor: Descriptor
@@ -55,7 +55,7 @@ class Server {
     private var connections: [Descriptor: ServerConnection] = [:]
 
 #if os(Linux)
-    init(endpoint: Endpoint) throws {
+    public init(endpoint: Endpoint) throws {
         epollDescriptor = epoll_create1(0)
         guard epollDescriptor != -1 else {
             throw ServerError.UnableToCreateEpoll
@@ -72,7 +72,7 @@ class Server {
         close(epollDescriptor)
     }
 #else
-    init(endpoint: Endpoint) throws {
+    public init(endpoint: Endpoint) throws {
         kqueueDescriptor = kqueue()
         guard kqueueDescriptor != -1 else {
             throw ServerError.UnableToCreateKQueue
@@ -90,7 +90,7 @@ class Server {
     }
 #endif
 
-    func addLocalEndpoint(endpoint: Endpoint) throws {
+    public func addLocalEndpoint(endpoint: Endpoint) throws {
         if let socketDescriptor = ServerUtil.createSocket(endpoint) {
             localEndpoints[socketDescriptor] = endpoint
 #if os(Linux)
@@ -151,7 +151,7 @@ class Server {
         }
     }
 
-    func handleEvents() throws {
+    public func handleEvents() throws {
         let numEvents = Int(epoll_wait(epollDescriptor, &events, Int32(events.count), -1))
         for i in 0..<numEvents {
             let event = self.events[i]
@@ -191,7 +191,7 @@ class Server {
         }
     }
 
-    func handleEvents() throws {
+    public func handleEvents() throws {
         let numEvents = Int(kevent(kqueueDescriptor, nil, 0, &events, Int32(events.count), nil))
         for i in 0..<numEvents {
             let event = self.events[i]
