@@ -96,10 +96,11 @@ struct Address: CustomStringConvertible {
             var zeroStart = 0
             for i in 0..<16 {
                 if address[i] == 0 {
-                    if zeroCount++ == 0 {
+                    if zeroCount == 0 {
                         zeroStart = i
                     }
 
+                    zeroCount += 1
                     if zeroCount > maxZeroCount {
                         maxZeroCount = zeroCount
                         maxZeroStart = zeroStart
