@@ -23,7 +23,11 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#if os(Linux)
+import Glibc
+#else
 import Foundation
+#endif
 
 /// Represents a connection to the server.
 class ServerConnection: CustomStringConvertible {
@@ -65,11 +69,8 @@ class ServerConnection: CustomStringConvertible {
     }
 
     func sendString(str: String) -> Int {
-        if let data = str.cStringUsingEncoding(NSUTF8StringEncoding) {
-            return send(descriptor, data, data.count - 1, 0)
-        } else {
-            return -1
-        }
+        let data = str.utf8CString
+        return send(descriptor, data, data.count - 1, 0)
     }
 
     func sendLine(line: String) -> Int {

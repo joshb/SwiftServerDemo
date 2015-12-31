@@ -46,13 +46,13 @@ class ServerDemo: ServerDelegate {
         print("\(connection) closed")
     }
 
-    func dataReceived(connection: ServerConnection, numberOfBytes: Int) {
+    func dataReceived(connection: ServerConnection) {
         let data = connection.readString().trimmed
         guard !data.isEmpty else {
             return
         }
 
-        print("Received \(numberOfBytes) bytes over \(connection): \(data)")
+        print("Received data over \(connection): \(data)")
 
         if let user = users[connection.descriptor] {
             broadcast("<\(user.name)> \(data)")
@@ -60,10 +60,6 @@ class ServerDemo: ServerDelegate {
             users[connection.descriptor] = User(connection: connection, name: data)
             broadcast("\(data) joined the chat")
         }
-    }
-
-    func canSendData(connection: ServerConnection, numberOfBytes: Int) {
-        print("Can send \(numberOfBytes) bytes over \(connection)")
     }
 
     func run() throws {

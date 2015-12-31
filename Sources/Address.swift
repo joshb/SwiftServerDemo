@@ -23,7 +23,11 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import Foundation
+#if os(Linux)
+import Glibc
+#else
+import Darwin
+#endif
 
 public enum AddressType {
     case IPv4, IPv6
@@ -40,18 +44,15 @@ struct Address: CustomStringConvertible {
     /// - parameter hostname: Hostname to resolve.
     /// - returns: Address, or nil if the hostname could not be resolved.
     static func fromHostname(hostname: String) -> Address? {
-        let hostnameCStr = hostname.cStringUsingEncoding(NSUTF8StringEncoding)
-        guard hostnameCStr != nil else {
-            return nil
-        }
+        let hostnameCStr = hostname.utf8CString
 
         // Resolve the hostname. We try resolving an IPv6 address
         // first, and fall back to IPv4 if that fails.
         var type = AddressType.IPv6
-        var host = gethostbyname2(hostnameCStr!, AF_INET6)
+        var host = gethostbyname2(hostnameCStr, AF_INET6)
         if host == nil {
             type = AddressType.IPv4
-            host = gethostbyname(hostnameCStr!)
+            host = gethostbyname(hostnameCStr)
         }
 
         guard host != nil else {

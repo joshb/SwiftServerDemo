@@ -23,43 +23,64 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import Foundation
+#if os(Linux)
+import Glibc
+#else
+import Darwin
+#endif
 
-extension String {
+public extension String {
+    private static func ucharToChar(c: CUnsignedChar) -> CChar {
+        if c < 128 {
+            return CChar(c)
+        } else {
+            return CChar(-128) | CChar(c & 0b01111111)
+        }
+    }
+
+    /// A UTF-8 C-string representation of the string.
+    public var utf8CString: [CChar] {
+        return self.nulTerminatedUTF8.map({ String.ucharToChar($0) })
+    }
+
     /// The string's character count.
-    var length: Int {
+    public var length: Int {
         return self.characters.count
     }
-    
+
     /// Gets a substring of the string.
     ///
     /// - parameter startIndex: The starting index to create the substring from.
     /// - parameter length: The length of the substring.
     /// - returns: A substring from the starting index and with the given length.
-    func substring(startIndex: Int, length: Int) -> String {
-        return self.substringWithRange(Range<String.Index>(start: self.startIndex.advancedBy(startIndex),
-            end: self.startIndex.advancedBy(startIndex + length)))
+    public func substring(startIndex: Int, length: Int) -> String {
+        let start = self.characters.startIndex.advancedBy(startIndex)
+        let end = start.advancedBy(length)
+        let subCharacters = self.characters[start..<end]
+        return String(subCharacters)
     }
 
     /// Gets a substring of the string.
     ///
     /// - parameter startIndex: The starting index to create the substring from.
     /// - returns: A substring from the starting index up to the end of the string.
-    func substring(startIndex: Int) -> String {
-        return self.substringWithRange(Range<String.Index>(start: self.startIndex.advancedBy(startIndex),
-            end: self.endIndex))
+    public func substring(startIndex: Int) -> String {
+        let start = self.characters.startIndex.advancedBy(startIndex)
+        let end = self.characters.endIndex
+        let subCharacters = self.characters[start..<end]
+        return String(subCharacters)
     }
 
     /// Checks whether or not the given character is a whitespace character.
     ///
     /// - parameter c: The character to check.
     /// - returns: true if the character is a whitespace character, false otherwise.
-    static func isWhitespace(c: Character) -> Bool {
+    public static func isWhitespace(c: Character) -> Bool {
         return c == " " || c == "\r" || c == "\n" || c == "\r\n" || c == "\t"
     }
 
     /// A copy of the string with all beginning and trailing whitespace characters removed.
-    var trimmed: String {
+    public var trimmed: String {
         var s = self
 
         while !s.isEmpty && String.isWhitespace(s.characters[s.startIndex]) {
